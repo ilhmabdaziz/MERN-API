@@ -55,16 +55,16 @@ exports.getAllBlogPost = (req, res, next) => {
     .then((count) => {
       totalItems = count;
       return BlogPost.find()
-        .skip((currentPage - 1) * perPage)
-        .limit(perPage);
+        .skip((parseInt(currentPage) - 1) * parseInt(perPage))
+        .limit(parseInt(perPage));
     })
     .then((result) => {
       res.status(200).json({
         message: "Data Blog Post Berhasil dipanggil",
         data: result,
         total_data: totalItems,
-        per_page: perPage,
-        current_page: currentPage,
+        per_page: parseInt(perPage),
+        current_page: parseInt(currentPage),
       });
     })
     .catch((err) => {
