@@ -1,13 +1,45 @@
 const express = require("express"); // nodeJs
 // import express from "express"; // ES6
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
+const multer = require("multer");
+const path = require("path");
 
 const app = express();
 const authRoutes = require("./src/routes/auth");
 const blogRoutes = require("./src/routes/blog");
 
+const port = 4000;
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().getTime() + "-" + file.originalname);
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype == "image/png" ||
+    file.mimetype == "image/jpg" ||
+    file.mimetype == "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
 // body-parser
 app.use(bodyParser.json()); // type JSON
+
+app.use("/images", express.static(path.join(__dirname, "images")));
+
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 
 // CORS
 app.use((req, res, next) => {
@@ -34,4 +66,17 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(4000);
+mongoose
+  .connect(
+    "mongodb+srv://zizsyDev:eDXnwT2HJGjRJq5A@cluster0.2xsss.mongodb.net/blog?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    console.log("Connect MongoDB Success...");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});

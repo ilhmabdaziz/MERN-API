@@ -1,3 +1,6 @@
+password mongoDB Atlas = eDXnwT2HJGjRJq5A
+=============================================================================
+
 Standar API
 
 {root.api}/{version}/{grouping}/{endpoint}
